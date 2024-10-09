@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflex Time Game</title>
+  <style>
+    #game-area {
+      display: grid;
+      grid-template-columns: repeat(7, 50px);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .box {
+      width: 50px;
+      height: 50px;
+      background-color: lightgray;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px solid #ccc;
+    }
+
+    .highlight {
+      background-color: yellow;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Reflex Time Game</h1>
+  <div id="game-area"></div>
+  <button id="start-btn">Start Game</button>
+  <p id="results"></p>
+
+  <script>
+    let clickedCount = 0;
+    let totalTime = 10; // Total time in seconds for the game
+    let intervalId;
+    let startTime;
+
+    const startGame = () => {
+      clickedCount = 0;
+      document.getElementById('results').innerHTML = '';
+
+      // Generate 35 boxes
+      const gameArea = document.getElementById('game-area');
+      gameArea.innerHTML = ''; // Clear previous boxes
+      for (let i = 0; i < 35; i++) {
+        const box = document.createElement('div');
+        box.classList.add('box');
+        box.addEventListener('click', handleBoxClick);
+        gameArea.appendChild(box);
+      }
+
+      // Randomly highlight one box
+      highlightRandomBox();
+
+      // Start the timer
+      startTime = Date.now();
+      intervalId = setTimeout(endGame, totalTime * 1000);
+    }
+
+    const highlightRandomBox = () => {
+      const boxes = document.querySelectorAll('.box');
+      boxes.forEach(box => box.classList.remove('highlight')); // Clear previous highlights
+
+      const randomIndex = Math.floor(Math.random() * boxes.length);
+      boxes[randomIndex].classList.add('highlight');
+    }
+
+    const handleBoxClick = (e) => {
+      if (e.target.classList.contains('highlight')) {
+        clickedCount++;
+        highlightRandomBox(); // Highlight the next random box
+      }
+    }
+
+    const endGame = () => {
+      clearTimeout(intervalId);
+      const elapsedTime = (Date.now() - startTime) / 1000; // Convert milliseconds to seconds
+      const reflexTime = clickedCount > 0 ? elapsedTime / clickedCount : 0; // Calculate reflex time
+
+      document.getElementById('results').innerHTML = `You clicked ${clickedCount} boxes. Your average reflex time is ${reflexTime.toFixed(2)} seconds per box.`;
+    }
+
+    document.getElementById('start-btn').addEventListener('click', startGame);
+  </script>
+
+</body>
+</html>
